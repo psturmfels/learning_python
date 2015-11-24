@@ -22,24 +22,24 @@ class board:
             self.print_grid()
             print("Congratulations! You found the 8.")
             return True
-        elif 0 <= input_row <= self.num_rows and 0 <= input_col <= self.num_cols:
+        elif 0 <= input_row < self.num_rows and 0 <= input_col < self.num_cols:
             if self.grid[input_row][input_col] == 'X':
                 print("You've already guessed that!")
             else:
                 self.grid[input_row][input_col] = 'X'
                 self.print_grid()
         else:
-            print("Coordinate " + str(input_row) + " , " + str(input_col) + ") is not in range.\n")
+            print("Coordinate (" + str(input_row) + ", " + str(input_col) + ") is not in range.\n")
         return False
 
-test_board = board(10, 10)
-row = random.randrange(test_board.num_rows)
-column = random.randrange(test_board.num_cols)
-print "Guessing (row,column) = (", row, ",", column, ")."
+
+test_board = board(5, 5)
+print("5x5 board initialized.")
+row = input("Enter a row: ")
+column = input("Enter a column: ")
 
 while not test_board.make_guess(row, column):
-    row = random.randrange(test_board.num_rows)
-    column = random.randrange(test_board.num_cols)
-    print "Guessing (row,column) = (", row, ",", column, ")."
+    row = input("Enter a row: ")
+    column = input("Enter a column: ")
 
 
