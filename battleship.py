@@ -1,3 +1,5 @@
+import random
+
 class Board(object):
     """
     A class used to represent a 10x10 grid of characters. Specifically,
@@ -32,7 +34,7 @@ class Player(object):
     """
     def __init__(self, name_in):
         self.name = name_in
-        self.board = Board()
+        self.my_board = Board()
         self.ships = [[], [], [], []]
 
 
@@ -41,21 +43,21 @@ class HumanPlayer(Player):
     Inherits from Player. Designed to model a human player of battleship.
     """
     def __init__(self, name_in):
-        self.my_board = Board()
         super(HumanPlayer, self).__init__(name_in)
 
-    # Need to fix: A player can currently overwrite his/her previously set ships
-    # When positioning the later ones. Make sure a player cannot do this.
     def position_ships(self):
-
-        print("Your current board:")
+        print(self.name + "'s turn to position ships.")
+        print(self.name + "'s current board:")
         self.my_board.print_grid()
         print()
-        print("You have 4 ships of lengths 2, 3, 4 and 5 respectively.")
+        print(self.name + ": You have 4 ships of lengths 2, 3, 4 and 5 respectively.")
 
         for index, ship in enumerate(self.ships):
             print()
             print("Ship number " + str(index + 1) + " [length " + str(index + 2) + "]:")
+            ship_direction = 0
+            ship_col = 0
+            ship_row = 0
 
             does_conflict = True
             while does_conflict:
@@ -105,8 +107,6 @@ class HumanPlayer(Player):
                                   " at coordinates (" + str(conflict_coordinate[0]) + ", " + str(conflict_coordinate[1]) + ")")
                             break
 
-
-
             self.ships[index] = [ship_direction, ship_row, ship_col, index + 2]
 
             if ship_direction == 0:
@@ -117,7 +117,7 @@ class HumanPlayer(Player):
                     self.my_board.set_coord(ship_row, col, str(index + 2))
 
             print()
-            print("Your current board:")
+            print(self.name + "'s current board:")
             self.my_board.print_grid()
 
 
@@ -128,6 +128,48 @@ class SimplePlayer(Player):
     def __init__(self, name_in):
         super(SimplePlayer, self).__init__(name_in)
 
-drew_human = HumanPlayer("Drew")
-drew_human.position_ships()
+    def position_ships(self):
+        print(self.name + " bot's turn to position ships.")
+        for index, ship in enumerate(self.ships):
+            does_conflict = True
+            ship_direction = 0
+            ship_col = 0
+            ship_row = 0
+
+            while does_conflict:
+                ship_direction = random.randrange(0,2)
+
+                if ship_direction == 0:
+                    ship_col = random.randrange(0, 9)
+                    ship_row = random.randrange(0, 9 - index)
+                else:
+                    ship_col = random.randrange(0, 9 - index)
+                    ship_row = random.randrange(0, 9)
+
+                if ship_direction == 0:
+                    for row in range(ship_row, ship_row + index + 2):
+                        does_conflict = self.my_board.grid[row][ship_col] != '*'
+
+                        if does_conflict:
+                            break
+                else:
+                    for col in range(ship_col, ship_col + index + 2):
+                        does_conflict = self.my_board.grid[ship_row][col] != '*'
+
+                        if does_conflict:
+                            break
+
+            self.ships[index] = [ship_direction, ship_row, ship_col, index + 2]
+
+            if ship_direction == 0:
+                for row in range(ship_row, ship_row + index + 2):
+                    self.my_board.set_coord(row, ship_col, str(index + 2))
+            else:
+                for col in range(ship_col, ship_col + index + 2):
+                    self.my_board.set_coord(ship_row, col, str(index + 2))
+        print(self.name + " bot has positioned its ships.")
+
+bot_drew = SimplePlayer("Drew")
+bot_drew.position_ships()
+bot_drew.my_board.print_grid()
 print()
